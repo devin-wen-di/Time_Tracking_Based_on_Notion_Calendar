@@ -1,0 +1,22 @@
+# Personal Notion exports and local preferences
+outputs/exports/
+outputs/dashboard_settings.csv
+*.csv
+.env
+.env.*
+*.key
+*.pem
+
+# Local builds, caches, and scratch work
+work/
+__pycache__/
+*.pyc
+outputs/*.lnk
+outputs/notion_calendar_export.exe
+outputs/notion_calendar_app.exe
+outputs/alibaba_fc_weekly_report/*.zip
+*.log
+
+# Operating system files
+Thumbs.db
+.DS_Store
