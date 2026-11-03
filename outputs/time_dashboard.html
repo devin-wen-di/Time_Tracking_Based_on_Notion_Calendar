@@ -239,16 +239,17 @@ function drawTrend(sliding=false){
   // Preserve every bar whose date and category still exist in the new window.
   trendAnimationToken++;
   const barsGroup=svg.querySelector('.trend-bars'),motions=[],nextBars=new Map(),moveRight=start<new Date(previous.start+'T00:00:00');
+  const currentNodes=new Map([...barsGroup.querySelectorAll('.stack-segment')].map(el=>[el.dataset.day+'|'+el.dataset.cat,el]));
   svg.querySelector('.trend-grid').innerHTML=grid;
   svg.querySelector('.trend-labels').innerHTML=labels;
   host.querySelector('.trend-window-label').textContent=labelText;
   host.querySelector('.trend-legend-wrap').innerHTML=legend;
-  for(const [key,t] of targets){let el=previous.bars.get(key),from;
+  for(const [key,t] of targets){let el=currentNodes.get(key),from;
     if(el){from={x:Number(el.getAttribute('x')),y:Number(el.getAttribute('y')),h:Number(el.getAttribute('height'))}}
     else{el=document.createElementNS('http://www.w3.org/2000/svg','rect');el.setAttribute('class','stack-segment clickable');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.dataset.day=t.day;el.dataset.cat=t.cat;el.setAttribute('width',String(bw));el.setAttribute('rx','4');el.setAttribute('x',String(t.x));el.setAttribute('y',String(baseline));el.setAttribute('height','0');el.innerHTML=`<title>${esc(keyLabel(t.day,'day'))} · ${esc(t.cat)}：${fmt(t.value)} 小时</title>`;barsGroup.appendChild(el);from={x:t.x,y:baseline,h:0}}
     el.setAttribute('fill',t.color);motions.push({el,from,to:{x:t.x,y:t.y,h:t.h}});nextBars.set(key,el)
   }
-  for(const [key,el] of previous.bars){if(nextBars.has(key))continue;let x=Number(el.getAttribute('x')),y=Number(el.getAttribute('y')),h=Number(el.getAttribute('height'));motions.push({el,from:{x,y,h},to:{x:moveRight?W-R+slot:L-slot-bw,y,h},exiting:true})}
+  for(const [key,el] of currentNodes){if(nextBars.has(key))continue;let x=Number(el.getAttribute('x')),y=Number(el.getAttribute('y')),h=Number(el.getAttribute('height'));motions.push({el,from:{x,y,h},to:{x:moveRight?W-R+slot:L-slot-bw,y,h},exiting:true})}
   trendState={svg,bars:nextBars,category,start:localDayKey(start)};
   animateTrend(motions,()=>{for(const item of motions)if(item.exiting)item.el.remove()});
   bindTrendEvents(host);
